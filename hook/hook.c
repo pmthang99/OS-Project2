@@ -16,10 +16,14 @@
 #include <asm/unistd.h>
 #include <asm/pgtable_types.h>
 
-/*sys_call_table address*/
-void **system_call_table_addr;
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Vo van Quan - Pham Minh Thang - Huynh ngoc Quan");
+MODULE_DESCRIPTION("Hook to `open` and `write` system call");
 
-/*original syscall prototype*/
+/*sys_call_table address*/
+void **system_call_table_addr; // biến lưu trữ syscall table
+
+/*original syscall prototype*/ // khai báo syscall tạm để lưu trữ syscall gốc
 asmlinkage long (*open_syscall) (const char __user *, int, int);
 asmlinkage long (*write_syscall) (unsigned int, const char __user *, int);
 
@@ -47,7 +51,7 @@ void get_process_name(void) {
 asmlinkage long modified_open(const char __user * file, int flags, int mode) {
     printk(KERN_INFO "Hook: A file was opened\n");
     printk(KERN_INFO "Hook:    File: %s\n", file);
-    get_process_name();
+    get_process_name();write
     return open_syscall(file, flags, mode);
 }
 
@@ -115,7 +119,3 @@ static void __exit exit_point(void) {
 
 module_init(entry_point);
 module_exit(exit_point);
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Nguyen Phuc Khang");
-MODULE_DESCRIPTION("Hook to `open` and `write` system call");
